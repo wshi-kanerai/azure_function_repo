@@ -1,5 +1,9 @@
 using System;
 using System.Net;
+public class UserError : Exception
+{
+    public UserError(string message) : base(message) { }
+}
 
 public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
@@ -15,17 +19,17 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     try
     {
         double xirr = XIRR(cashflow, dates);
-        req.CreateResponse(HttpStatusCode.OK, xirr.ToString());
+        return req.CreateResponse(HttpStatusCode.OK, xirr.ToString());
         //Console.WriteLine(xirr.ToString());
     }
     catch (UserError e)
     {
-        req.CreateResponse(HttpStatusCode.BadRequest, e.Message);
+        return req.CreateResponse(HttpStatusCode.BadRequest, e.Message);
         //Console.WriteLine(e.Message);
     }
     catch (Exception e)
     {
-        req.CreateReponse(HttpStatusCode.InternalServerError, "Internal Error: " + e.Message);
+        return req.CreateResponse(HttpStatusCode.InternalServerError, "Internal Error: " + e.Message);
         //Console.WriteLine("Internal Error:" + e.GetType().ToString() + " " + e.Message);
     }
 }
@@ -86,3 +90,4 @@ public static double XIRR(double[] cashflow, string[] dates)
     }
     return x;
 }
+
