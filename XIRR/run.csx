@@ -12,12 +12,10 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     // Get request body
     dynamic data = await req.Content.ReadAsAsync<object>();
 
-    // Set name to query string or body data
-    double[] cashflow = data?.cashflow;
-    string[] dates = data?.dates;
-
     try
     {
+        double[] cashflow = (data?.cashflow).ToObject<double[]>();
+        string[] dates = (data?.dates).ToObject<string[]>();
         double xirr = XIRR(cashflow, dates);
         return req.CreateResponse(HttpStatusCode.OK, xirr.ToString());
         //Console.WriteLine(xirr.ToString());
